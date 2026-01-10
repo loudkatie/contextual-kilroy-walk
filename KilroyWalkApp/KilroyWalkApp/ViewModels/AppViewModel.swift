@@ -2,6 +2,7 @@ import Foundation
 import SwiftUI
 import AVFoundation
 import UIKit
+
 import ContextualCore
 
 @MainActor
@@ -67,21 +68,22 @@ final class AppViewModel: ObservableObject {
         demoLog: DemoLogService = DemoLogService(),
         kilroyConnector: KilroyDropsConnector = KilroyDropsConnector(),
         calendarConnector: CalendarConnector = CalendarConnector(),
-        audioService: AudioWhisperService = AudioWhisperService()
+        audioService: AudioWhisperService? = nil
     ) {
         self.agent = agent
         self.demoLog = demoLog
         self.kilroyConnector = kilroyConnector
         self.calendarConnector = calendarConnector
-        self.audioService = audioService
+        let resolvedAudioService = audioService ?? AudioWhisperService()
+        self.audioService = resolvedAudioService
         self.context = Context(placeId: "frontier_tower", timestamp: Date())
         self.connectorStatuses = [
             ConnectorStatus(name: kilroyConnector.name, description: kilroyConnector.description, lastSynced: nil, state: .idle),
             ConnectorStatus(name: calendarConnector.name, description: calendarConnector.description, lastSynced: nil, state: .idle)
         ]
-        self.audioRouteDescription = audioService.currentRouteDescription
+        self.audioRouteDescription = resolvedAudioService.currentRouteDescription
 
-        audioService.routeDescriptionDidChange = { [weak self] description in
+        resolvedAudioService.routeDescriptionDidChange = { [weak self] description in
             self?.audioRouteDescription = description
         }
     }
@@ -195,12 +197,12 @@ final class AppViewModel: ObservableObject {
         errors: inout [String]
     ) async {
         setStatus(for: connector.name, state: .syncing)
-        let result = await Result { try await connector.fetchDrops(for: context) }
-        switch result {
-        case .success(let drops):
-            accumulator.append(contentsOf: drops)
+
+        do {
+            let fetchedDrops = try await connector.fetchDrops(for: context)
+            accumulator.append(contentsOf: fetchedDrops)
             setStatus(for: connector.name, state: .ready)
-        case .failure(let error):
+        } catch {
             setStatus(for: connector.name, state: .error(error.localizedDescription))
             errors.append("\(connector.name): \(error.localizedDescription)")
         }
