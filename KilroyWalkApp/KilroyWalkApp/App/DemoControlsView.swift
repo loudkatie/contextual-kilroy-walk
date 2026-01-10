@@ -34,6 +34,12 @@ struct DemoControlsView: View {
                     viewModel.storePermissionToken()
                 }
             }
+
+            Section("Audio") {
+                Button("Test Whisper") {
+                    viewModel.testWhisper()
+                }
+            }
         }
         .navigationTitle("Demo Controls")
     }

@@ -1,6 +1,7 @@
 import Foundation
 import SwiftUI
 import AVFoundation
+import UIKit
 import ContextualCore
 
 @MainActor
@@ -55,26 +56,34 @@ final class AppViewModel: ObservableObject {
     @Published var floorBandInput: String = ""
     @Published var permissionTokenInput: String = ""
     @Published private(set) var connectorStatuses: [ConnectorStatus] = []
+    @Published private(set) var audioRouteDescription: String
 
     private let kilroyConnector: KilroyDropsConnector
     private let calendarConnector: CalendarConnector
-    private let speechSynthesizer = AVSpeechSynthesizer()
+    private let audioService: AudioWhisperService
 
     init(
         agent: Agent = Agent(),
         demoLog: DemoLogService = DemoLogService(),
         kilroyConnector: KilroyDropsConnector = KilroyDropsConnector(),
-        calendarConnector: CalendarConnector = CalendarConnector()
+        calendarConnector: CalendarConnector = CalendarConnector(),
+        audioService: AudioWhisperService = AudioWhisperService()
     ) {
         self.agent = agent
         self.demoLog = demoLog
         self.kilroyConnector = kilroyConnector
         self.calendarConnector = calendarConnector
+        self.audioService = audioService
         self.context = Context(placeId: "frontier_tower", timestamp: Date())
         self.connectorStatuses = [
             ConnectorStatus(name: kilroyConnector.name, description: kilroyConnector.description, lastSynced: nil, state: .idle),
             ConnectorStatus(name: calendarConnector.name, description: calendarConnector.description, lastSynced: nil, state: .idle)
         ]
+        self.audioRouteDescription = audioService.currentRouteDescription
+
+        audioService.routeDescriptionDidChange = { [weak self] description in
+            self?.audioRouteDescription = description
+        }
     }
 
     func bootstrap() async {
@@ -82,9 +91,10 @@ final class AppViewModel: ObservableObject {
     }
 
     func triggerArrival() {
+        softHapticTap()
+        audioService.playWelcome()
         context.placeId = "frontier_tower"
         context.timestamp = Date()
-        speakArrival()
         demoLog.append("Arrival event triggered", category: .action)
         Task {
             await refreshDrops(reason: "Arrival event")
@@ -125,6 +135,10 @@ final class AppViewModel: ObservableObject {
         demoLog.append("Ignored drop: \(drop.title)", category: .action)
     }
 
+    func testWhisper() {
+        audioService.playWantToOpen()
+    }
+
     func isLiked(drop: Drop) -> Bool {
         agent.memoryStore.snapshot.likedDrops.contains(drop.id)
     }
@@ -150,7 +164,12 @@ final class AppViewModel: ObservableObject {
         if errors.isEmpty {
             demoLog.append("\(reason): \(filtered.count) drops available", category: .info)
         } else {
-            demoLog.append("Partial sync (\(filtered.count) drops). Issues: \(errors.joined(separator: \", \"))", category: .error)
+            demoLog.append("Partial sync (\(filtered.count) drops). Issues: \(errors.joined(separator: ", "))", category: .error)
+        }
+
+        if !filtered.isEmpty {
+            softHapticTap()
+            audioService.playDropHere()
         }
     }
 
@@ -187,10 +206,9 @@ final class AppViewModel: ObservableObject {
         }
     }
 
-    private func speakArrival() {
-        let utterance = AVSpeechUtterance(string: "Welcome to Frontier Tower")
-        utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
-        utterance.volume = 0.3
-        speechSynthesizer.speak(utterance)
+    private func softHapticTap() {
+        let generator = UIImpactFeedbackGenerator(style: .soft)
+        generator.prepare()
+        generator.impactOccurred(intensity: 0.8)
     }
 }

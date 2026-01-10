@@ -36,6 +36,14 @@ struct HomeView: View {
                 .monospaced()
             Text("Born \(viewModel.agent.bornAt, style: .date) at \(viewModel.agent.bornAt, style: .time)")
                 .font(.headline)
+            Divider()
+            HStack {
+                Image(systemName: "waveform.and.magnifyingglass")
+                    .foregroundStyle(.secondary)
+                Text("Audio Route: \(viewModel.audioRouteDescription)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
