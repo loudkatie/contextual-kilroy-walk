@@ -1,0 +1,361 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+	C26E117C5364BC0ED8BD5ADF /* KilroyWalkAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A5BB14FFA252B953AA271A /* KilroyWalkAppApp.swift */; };
+	854968CC78621EED7B4413D2 /* AppRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63300CFE1228FB94687B6665 /* AppRootView.swift */; };
+	ED7921ACDEA2C1107030CD98 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD3BEF3F6536DD168EFE262A /* HomeView.swift */; };
+	4195FC916466A7BBFC8AA357 /* DemoControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96B724074EA80DCE524CD561 /* DemoControlsView.swift */; };
+	D90281109C9507C811CFF1EF /* DropsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B19C5E6D012B21786E31B682 /* DropsView.swift */; };
+	8045E1A1F4E45E6D84928B95 /* DropDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCFCE070AB478E94A2CDD0E5 /* DropDetailView.swift */; };
+	A3F338167DE2DCFB5F1D1EDD /* ConnectorStatusTile.swift in Sources */ = {isa = PBXBuildFile; fileRef = B48C411E7795BB20EA11D85C /* ConnectorStatusTile.swift */; };
+	32D48B525FA40F8B8CFA4028 /* DemoLogListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3127AE79AB131F8B1F84DC4B /* DemoLogListView.swift */; };
+	6F210385128962A9B7A20F32 /* AppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEE376A469A9B1E651BA95EA /* AppViewModel.swift */; };
+	431F6694123F1F6110D0EAF5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 893CB4F55D6B8697568FD568 /* Assets.xcassets */; };
+	DC4858D4107983BE6A402A64 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 33672422EA28FF55E86C08F7 /* Preview Assets.xcassets */; };
+	10413B07F9EB9C42228B91B1 /* ContextualCore in Frameworks */ = {isa = PBXBuildFile; productRef = 5C9591AC6B94876F83DD27D3 /* ContextualCore */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+	35A5BB14FFA252B953AA271A /* KilroyWalkAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KilroyWalkAppApp.swift; sourceTree = "<group>"; };
+	63300CFE1228FB94687B6665 /* AppRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRootView.swift; sourceTree = "<group>"; };
+	AD3BEF3F6536DD168EFE262A /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+	96B724074EA80DCE524CD561 /* DemoControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoControlsView.swift; sourceTree = "<group>"; };
+	B19C5E6D012B21786E31B682 /* DropsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropsView.swift; sourceTree = "<group>"; };
+	FCFCE070AB478E94A2CDD0E5 /* DropDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropDetailView.swift; sourceTree = "<group>"; };
+	B48C411E7795BB20EA11D85C /* ConnectorStatusTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectorStatusTile.swift; sourceTree = "<group>"; };
+	3127AE79AB131F8B1F84DC4B /* DemoLogListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoLogListView.swift; sourceTree = "<group>"; };
+	DEE376A469A9B1E651BA95EA /* AppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewModel.swift; sourceTree = "<group>"; };
+	957AAC3F5FF9C21AA5077855 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+	893CB4F55D6B8697568FD568 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+	33672422EA28FF55E86C08F7 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+	22C1E056ABE0A5BD4C58C993 /* KilroyWalkApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KilroyWalkApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+	3BF43AA4F913A7D2A11E5CC6 /* Frameworks */ = {
+		isa = PBXFrameworksBuildPhase;
+		buildActionMask = 2147483647;
+		files = (
+			10413B07F9EB9C42228B91B1 /* ContextualCore in Frameworks */,
+		);
+		runOnlyForDeploymentPostprocessing = 0;
+	};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+	93B91CE8900C0D4A6F0695D7 = {
+		isa = PBXGroup;
+		children = (
+			F536940FA2ED55B66258C794 /* KilroyWalkApp */,
+			DE0BFF268E5C00C1B6E394B8 /* Products */
+		);
+		sourceTree = "<group>";
+	};
+	DE0BFF268E5C00C1B6E394B8 /* Products */ = {
+		isa = PBXGroup;
+		children = (
+			22C1E056ABE0A5BD4C58C993 /* KilroyWalkApp.app */,
+		);
+		name = Products;
+		sourceTree = "<group>";
+	};
+	F536940FA2ED55B66258C794 /* KilroyWalkApp */ = {
+		isa = PBXGroup;
+		children = (
+			F1ADAB2C2C5BB36A89E123AA /* App */,
+			77DBE3E56FDA449F888B9D6B /* Components */,
+			120039A40DB69F89B3BCF3F1 /* ViewModels */,
+			0BFAC579EDE10BB3BB94F2B8 /* Resources */
+		);
+		path = KilroyWalkApp;
+		sourceTree = "<group>";
+	};
+	F1ADAB2C2C5BB36A89E123AA /* App */ = {
+		isa = PBXGroup;
+		children = (
+			35A5BB14FFA252B953AA271A /* KilroyWalkAppApp.swift */,
+			63300CFE1228FB94687B6665 /* AppRootView.swift */,
+			AD3BEF3F6536DD168EFE262A /* HomeView.swift */,
+			96B724074EA80DCE524CD561 /* DemoControlsView.swift */,
+			B19C5E6D012B21786E31B682 /* DropsView.swift */,
+			FCFCE070AB478E94A2CDD0E5 /* DropDetailView.swift */
+		);
+		path = App;
+		sourceTree = "<group>";
+	};
+	77DBE3E56FDA449F888B9D6B /* Components */ = {
+		isa = PBXGroup;
+		children = (
+			B48C411E7795BB20EA11D85C /* ConnectorStatusTile.swift */,
+			3127AE79AB131F8B1F84DC4B /* DemoLogListView.swift */
+		);
+		path = Components;
+		sourceTree = "<group>";
+	};
+	120039A40DB69F89B3BCF3F1 /* ViewModels */ = {
+		isa = PBXGroup;
+		children = (
+			DEE376A469A9B1E651BA95EA /* AppViewModel.swift */
+		);
+		path = ViewModels;
+		sourceTree = "<group>";
+	};
+	0BFAC579EDE10BB3BB94F2B8 /* Resources */ = {
+		isa = PBXGroup;
+		children = (
+			893CB4F55D6B8697568FD568 /* Assets.xcassets */,
+			DA7637AB51FD6D1B53A0247F /* Preview Content */,
+			957AAC3F5FF9C21AA5077855 /* Info.plist */
+		);
+		path = Resources;
+		sourceTree = "<group>";
+	};
+	DA7637AB51FD6D1B53A0247F /* Preview Content */ = {
+		isa = PBXGroup;
+		children = (
+			33672422EA28FF55E86C08F7 /* Preview Assets.xcassets */
+		);
+		path = "Preview Content";
+		sourceTree = "<group>";
+	};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+	FD8A33A026FD84FA30B0CBC2 /* KilroyWalkApp */ = {
+		isa = PBXNativeTarget;
+		buildConfigurationList = A46DC0097C127CA6CB3B2962 /* Build configuration list for PBXNativeTarget "KilroyWalkApp" */;
+		buildPhases = (
+			333C60C5D250378148D57FDD /* Sources */,
+			3BF43AA4F913A7D2A11E5CC6 /* Frameworks */,
+			4D64963654428804F691CC22 /* Resources */
+		);
+		buildRules = (
+		);
+		dependencies = (
+		);
+		name = KilroyWalkApp;
+		packageProductDependencies = (
+			5C9591AC6B94876F83DD27D3 /* ContextualCore */
+		);
+		productName = KilroyWalkApp;
+		productReference = 22C1E056ABE0A5BD4C58C993 /* KilroyWalkApp.app */;
+		productType = "com.apple.product-type.application";
+	};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+	610294FA5C7D82D67D54C40B /* Project object */ = {
+		isa = PBXProject;
+		attributes = {
+			BuildIndependentTargetsInParallel = YES;
+			LastSwiftUpdateCheck = 1530;
+			LastUpgradeCheck = 1530;
+		};
+		buildConfigurationList = DDFC05527CC91C186EB81CC8 /* Build configuration list for PBXProject "KilroyWalkApp" */;
+		compatibilityVersion = "Xcode 15.0";
+		developmentRegion = en;
+		hasScannedForEncodings = 0;
+		knownRegions = (
+			en,
+		);
+		mainGroup = 93B91CE8900C0D4A6F0695D7;
+		packageReferences = (
+			0650E124946B42E9938E3DCF /* XCLocalSwiftPackageReference "ContextualCore" */
+		);
+		productRefGroup = DE0BFF268E5C00C1B6E394B8 /* Products */;
+		projectDirPath = "";
+		projectRoot = "";
+		targets = (
+			FD8A33A026FD84FA30B0CBC2 /* KilroyWalkApp */
+		);
+	};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+	4D64963654428804F691CC22 /* Resources */ = {
+		isa = PBXResourcesBuildPhase;
+		buildActionMask = 2147483647;
+		files = (
+			431F6694123F1F6110D0EAF5 /* Assets.xcassets in Resources */,
+			DC4858D4107983BE6A402A64 /* Preview Assets.xcassets in Resources */
+		);
+		runOnlyForDeploymentPostprocessing = 0;
+	};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+	333C60C5D250378148D57FDD /* Sources */ = {
+		isa = PBXSourcesBuildPhase;
+		buildActionMask = 2147483647;
+		files = (
+			6F210385128962A9B7A20F32 /* AppViewModel.swift in Sources */,
+			32D48B525FA40F8B8CFA4028 /* DemoLogListView.swift in Sources */,
+			C26E117C5364BC0ED8BD5ADF /* KilroyWalkAppApp.swift in Sources */,
+			8045E1A1F4E45E6D84928B95 /* DropDetailView.swift in Sources */,
+			4195FC916466A7BBFC8AA357 /* DemoControlsView.swift in Sources */,
+			A3F338167DE2DCFB5F1D1EDD /* ConnectorStatusTile.swift in Sources */,
+			854968CC78621EED7B4413D2 /* AppRootView.swift in Sources */,
+			ED7921ACDEA2C1107030CD98 /* HomeView.swift in Sources */,
+			D90281109C9507C811CFF1EF /* DropsView.swift in Sources */
+		);
+		runOnlyForDeploymentPostprocessing = 0;
+	};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+	C54252C1777E35C0D92C3A1A /* Debug */ = {
+		isa = XCBuildConfiguration;
+		buildSettings = {
+			ALWAYS_SEARCH_USER_PATHS = NO;
+			CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+			CLANG_ENABLE_MODULES = YES;
+			CLANG_ENABLE_OBJC_ARC = YES;
+			CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+			COPY_PHASE_STRIP = NO;
+			DEVELOPMENT_TEAM = "";
+			ENABLE_STRICT_OBJC_MSGSEND = YES;
+			GCC_C_LANGUAGE_STANDARD = gnu17;
+			GCC_DYNAMIC_NO_PIC = NO;
+			GCC_OPTIMIZATION_LEVEL = 0;
+			GCC_PREPROCESSOR_DEFINITIONS = (
+				"DEBUG=1",
+				"$(inherited)"
+			);
+			GCC_WARN_SHADOW = YES;
+			GCC_WARN_UNUSED_FUNCTION = YES;
+			GCC_WARN_UNUSED_VARIABLE = YES;
+			IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+			MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+			ONLY_ACTIVE_ARCH = YES;
+			SDKROOT = iphoneos;
+			SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+			SWIFT_VERSION = 5.0;
+		};
+		name = Debug;
+	};
+	237982A0E3C5CE0AB7CFE472 /* Release */ = {
+		isa = XCBuildConfiguration;
+		buildSettings = {
+			ALWAYS_SEARCH_USER_PATHS = NO;
+			CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+			CLANG_ENABLE_MODULES = YES;
+			CLANG_ENABLE_OBJC_ARC = YES;
+			CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+			COPY_PHASE_STRIP = NO;
+			DEVELOPMENT_TEAM = "";
+			ENABLE_NS_ASSERTIONS = NO;
+			GCC_C_LANGUAGE_STANDARD = gnu17;
+			GCC_WARN_SHADOW = YES;
+			GCC_WARN_UNUSED_FUNCTION = YES;
+			GCC_WARN_UNUSED_VARIABLE = YES;
+			IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+			MTL_ENABLE_DEBUG_INFO = NO;
+			SDKROOT = iphoneos;
+			SWIFT_COMPILATION_MODE = wholemodule;
+			SWIFT_VERSION = 5.0;
+		};
+		name = Release;
+	};
+	D0477D2A01C530ED9799A811 /* Debug */ = {
+		isa = XCBuildConfiguration;
+		buildSettings = {
+			ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+			ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+			CODE_SIGN_STYLE = Automatic;
+			CURRENT_PROJECT_VERSION = 1;
+			DEVELOPMENT_ASSET_PATHS = "\"KilroyWalkApp/Resources/Preview Content\"";
+			DEVELOPMENT_TEAM = "";
+			ENABLE_PREVIEWS = YES;
+			GENERATE_INFOPLIST_FILE = NO;
+			INFOPLIST_FILE = KilroyWalkApp/Info.plist;
+			INFOPLIST_KEY_UIApplicationSceneManifest_Generation = NO;
+			INFOPLIST_KEY_UILaunchScreen_Generation = NO;
+			IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+			LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+			MARKETING_VERSION = 1.0;
+			OTHER_LDFLAGS = "$(inherited)";
+			PRODUCT_BUNDLE_IDENTIFIER = com.kilroy.walkdemo;
+			PRODUCT_NAME = "$(TARGET_NAME)";
+			SDKROOT = iphoneos;
+			SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+			SWIFT_EMIT_LOC_STRINGS = YES;
+			SWIFT_VERSION = 5.0;
+			TARGETED_DEVICE_FAMILY = "1,2";
+		};
+		name = Debug;
+	};
+	F0AB2C97116A6FA7F2CBB11B /* Release */ = {
+		isa = XCBuildConfiguration;
+		buildSettings = {
+			ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+			ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+			CODE_SIGN_STYLE = Automatic;
+			CURRENT_PROJECT_VERSION = 1;
+			DEVELOPMENT_ASSET_PATHS = "\"KilroyWalkApp/Resources/Preview Content\"";
+			DEVELOPMENT_TEAM = "";
+			ENABLE_PREVIEWS = YES;
+			GENERATE_INFOPLIST_FILE = NO;
+			INFOPLIST_FILE = KilroyWalkApp/Info.plist;
+			INFOPLIST_KEY_UIApplicationSceneManifest_Generation = NO;
+			INFOPLIST_KEY_UILaunchScreen_Generation = NO;
+			IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+			LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+			MARKETING_VERSION = 1.0;
+			OTHER_LDFLAGS = "$(inherited)";
+			PRODUCT_BUNDLE_IDENTIFIER = com.kilroy.walkdemo;
+			PRODUCT_NAME = "$(TARGET_NAME)";
+			SDKROOT = iphoneos;
+			SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+			SWIFT_EMIT_LOC_STRINGS = YES;
+			SWIFT_VERSION = 5.0;
+			TARGETED_DEVICE_FAMILY = "1,2";
+		};
+		name = Release;
+	};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+	DDFC05527CC91C186EB81CC8 /* Build configuration list for PBXProject "KilroyWalkApp" */ = {
+		isa = XCConfigurationList;
+		buildConfigurations = (
+			C54252C1777E35C0D92C3A1A /* Debug */,
+			237982A0E3C5CE0AB7CFE472 /* Release */
+		);
+		defaultConfigurationIsVisible = 0;
+		defaultConfigurationName = Debug;
+	};
+	A46DC0097C127CA6CB3B2962 /* Build configuration list for PBXNativeTarget "KilroyWalkApp" */ = {
+		isa = XCConfigurationList;
+		buildConfigurations = (
+			D0477D2A01C530ED9799A811 /* Debug */,
+			F0AB2C97116A6FA7F2CBB11B /* Release */
+		);
+		defaultConfigurationIsVisible = 0;
+		defaultConfigurationName = Debug;
+	};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+	0650E124946B42E9938E3DCF /* XCLocalSwiftPackageReference "ContextualCore" */ = {
+		isa = XCLocalSwiftPackageReference;
+		relativePath = ../ContextualCore;
+	};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+	5C9591AC6B94876F83DD27D3 /* ContextualCore */ = {
+		isa = XCSwiftPackageProductDependency;
+		package = 0650E124946B42E9938E3DCF /* XCLocalSwiftPackageReference "ContextualCore" */;
+		productName = ContextualCore;
+	};
+/* End XCSwiftPackageProductDependency section */
+
+	};
+	rootObject = 610294FA5C7D82D67D54C40B /* Project object */;
+}
