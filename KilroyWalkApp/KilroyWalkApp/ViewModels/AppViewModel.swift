@@ -69,6 +69,7 @@ final class AppViewModel: ObservableObject {
     @Published private(set) var momentDiagnostics: String
     @Published private(set) var locationSummary: String
     @Published private(set) var currentPOILabel: String?
+    @Published private(set) var consentState: ConsentState = .idle
 
     private let kilroyConnector: KilroyDropsConnector
     private let calendarConnector: CalendarConnector
@@ -153,11 +154,15 @@ final class AppViewModel: ObservableObject {
         switch decision.status {
         case .triggered:
             if let moment = decision.moment {
-                activate(moment: moment, reason: manual.displayName, decisionMessage: decision.message)
+                activate(moment: moment, reason: manual.displayName, explanation: decision.explanation, eligibility: decision.eligibility)
             }
         case .missingLocation, .outsideZone, .noMatch:
-            momentDiagnostics = decision.message
-            demoLog.append("Manual \(manual.displayName) skipped: \(decision.message)", category: .info)
+            consentState = decision.consentState
+            momentDiagnostics = decision.explanation
+            demoLog.append(
+                "Manual \(manual.displayName) skipped • eligible=\(decision.eligibility) • \(decision.explanation)",
+                category: .info
+            )
         }
     }
 
@@ -292,22 +297,35 @@ final class AppViewModel: ObservableObject {
         switch decision.status {
         case .triggered:
             if let moment = decision.moment {
-                activate(moment: moment, reason: reason, decisionMessage: decision.message)
+                activate(
+                    moment: moment,
+                    reason: reason,
+                    explanation: decision.explanation,
+                    eligibility: decision.eligibility
+                )
             }
         case .missingLocation, .outsideZone, .noMatch:
             activeMoment = nil
-            momentDiagnostics = decision.message
+            consentState = decision.consentState
+            momentDiagnostics = decision.explanation
             if logEvenIfMissing {
-                demoLog.append("\(reason): \(decision.message)", category: .info)
+                demoLog.append(
+                    "\(reason): eligible=\(decision.eligibility) • \(decision.explanation)",
+                    category: .info
+                )
             }
         }
     }
 
-    private func activate(moment: Moment, reason: String, decisionMessage: String) {
+    private func activate(moment: Moment, reason: String, explanation: String, eligibility: Bool) {
         activeMoment = moment
-        momentDiagnostics = decisionMessage
+        momentDiagnostics = explanation
+        consentState = .awaiting
         triggerEngine.markDelivered(moment)
-        demoLog.append("Moment ready (\(moment.title)) via \(reason). \(decisionMessage)", category: .action)
+        demoLog.append(
+            "Moment ready (\(moment.title)) via \(reason) • eligible=\(eligibility) • \(explanation)",
+            category: .action
+        )
         softHapticTap()
         playWhisper(for: moment)
     }

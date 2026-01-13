@@ -11,12 +11,22 @@ public final class TriggerEngine {
 
         public let status: Status
         public let moment: Moment?
-        public let message: String
+        public let explanation: String
+        public let consentState: ConsentState
+        public let eligibility: Bool
 
-        public init(status: Status, moment: Moment?, message: String) {
+        public init(
+            status: Status,
+            moment: Moment?,
+            explanation: String,
+            consentState: ConsentState = .idle,
+            eligibility: Bool
+        ) {
             self.status = status
             self.moment = moment
-            self.message = message
+            self.explanation = explanation
+            self.consentState = consentState
+            self.eligibility = eligibility
         }
     }
 
@@ -39,14 +49,22 @@ public final class TriggerEngine {
         now: Date = Date()
     ) -> Decision {
         guard let latitude = context.latitude, let longitude = context.longitude else {
-            return Decision(status: .missingLocation, moment: nil, message: "No location fix available.")
+            return Decision(
+                status: .missingLocation,
+                moment: nil,
+                explanation: "No location fix available.",
+                consentState: .idle,
+                eligibility: false
+            )
         }
 
         guard zone.contains(latitude: latitude, longitude: longitude) else {
             return Decision(
                 status: .outsideZone,
                 moment: nil,
-                message: "Outside \(zone.displayName) zone."
+                explanation: "Outside \(zone.displayName) zone.",
+                consentState: .idle,
+                eligibility: false
             )
         }
 
@@ -66,7 +84,9 @@ public final class TriggerEngine {
             return Decision(
                 status: .noMatch,
                 moment: nil,
-                message: diagnostics(for: poi, snapshot: snapshot, now: now)
+                explanation: diagnostics(for: poi, snapshot: snapshot, now: now),
+                consentState: .idle,
+                eligibility: false
             )
         }
 
@@ -77,7 +97,13 @@ public final class TriggerEngine {
             message = "Zone-wide moment available"
         }
 
-        return Decision(status: .triggered, moment: moment, message: message)
+        return Decision(
+            status: .triggered,
+            moment: moment,
+            explanation: message,
+            consentState: .awaiting,
+            eligibility: true
+        )
     }
 
     public func manualTrigger(
@@ -86,7 +112,13 @@ public final class TriggerEngine {
         now: Date = Date()
     ) -> Decision {
         guard let moment = catalog.first(where: { $0.manualTriggerID == manualID }) else {
-            return Decision(status: .noMatch, moment: nil, message: "No moment wired to \(manualID).")
+            return Decision(
+                status: .noMatch,
+                moment: nil,
+                explanation: "No moment wired to \(manualID).",
+                consentState: .idle,
+                eligibility: false
+            )
         }
 
         guard passesGating(moment, snapshot: snapshot) else {
@@ -94,7 +126,9 @@ public final class TriggerEngine {
             return Decision(
                 status: .noMatch,
                 moment: nil,
-                message: "Missing \(token) token."
+                explanation: "Missing \(token) token.",
+                consentState: .idle,
+                eligibility: false
             )
         }
 
@@ -103,11 +137,19 @@ public final class TriggerEngine {
             return Decision(
                 status: .noMatch,
                 moment: nil,
-                message: "Cooling down \(Int(remaining))s more."
+                explanation: "Cooling down \(Int(remaining))s more.",
+                consentState: .coolingDown,
+                eligibility: false
             )
         }
 
-        return Decision(status: .triggered, moment: moment, message: "Manual trigger ready.")
+        return Decision(
+            status: .triggered,
+            moment: moment,
+            explanation: "Manual trigger ready.",
+            consentState: .awaiting,
+            eligibility: true
+        )
     }
 
     public func markDelivered(_ moment: Moment, at date: Date = Date()) {
