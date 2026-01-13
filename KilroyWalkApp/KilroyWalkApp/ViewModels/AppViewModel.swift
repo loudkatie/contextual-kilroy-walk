@@ -192,6 +192,30 @@ final class AppViewModel: ObservableObject {
         audioService.playWantToOpen()
     }
 
+    func handleAction(_ action: MomentAction, for moment: Moment) {
+        let actionSummary = "\(action.title) [\(action.kind.rawValue)]"
+        switch action.kind {
+        case .acknowledge:
+            demoLog.append("Action tapped: \(actionSummary) • moment dismissed", category: .action)
+            completeMoment(with: "Moment dismissed by user.", consent: .idle)
+        case .openURL:
+            guard let payload = action.payload, let url = URL(string: payload) else {
+                demoLog.append("Action tapped: \(actionSummary) • invalid URL payload.", category: .error)
+                return
+            }
+            demoLog.append("Action tapped: \(actionSummary) • opening \(payload)", category: .action)
+            UIApplication.shared.open(url)
+            completeMoment(with: "Opened link: \(payload)", consent: .granted)
+        case .openDrop:
+            let payload = action.payload ?? "unknown drop"
+            demoLog.append("Action tapped: \(actionSummary) • route via Drops tab (\(payload))", category: .action)
+            completeMoment(with: "Drop requested: \(payload)", consent: .granted)
+        case .openCard:
+            demoLog.append("Action tapped: \(actionSummary) • no view wired yet.", category: .info)
+            completeMoment(with: "Captured intent: \(action.title)", consent: .granted)
+        }
+    }
+
     func isLiked(drop: Drop) -> Bool {
         agent.memoryStore.snapshot.likedDrops.contains(drop.id)
     }
@@ -347,6 +371,12 @@ final class AppViewModel: ObservableObject {
         let generator = UIImpactFeedbackGenerator(style: .soft)
         generator.prepare()
         generator.impactOccurred(intensity: 0.8)
+    }
+
+    private func completeMoment(with message: String, consent: ConsentState) {
+        activeMoment = nil
+        consentState = consent
+        momentDiagnostics = message
     }
 }
 

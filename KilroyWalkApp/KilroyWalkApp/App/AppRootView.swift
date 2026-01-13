@@ -6,17 +6,10 @@ struct AppRootView: View {
     var body: some View {
         TabView {
             NavigationStack {
-                HomeView()
+                HostPresenceView()
             }
             .tabItem {
-                Label("Home", systemImage: "house.fill")
-            }
-
-            NavigationStack {
-                DemoControlsView()
-            }
-            .tabItem {
-                Label("Demo", systemImage: "switch.2")
+                Label("Presence", systemImage: "sparkles")
             }
 
             NavigationStack {
