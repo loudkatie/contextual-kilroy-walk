@@ -2,6 +2,7 @@ import Foundation
 import SwiftUI
 import AVFoundation
 import UIKit
+import Combine
 
 import ContextualCore
 
@@ -58,17 +59,30 @@ final class AppViewModel: ObservableObject {
     @Published var permissionTokenInput: String = ""
     @Published private(set) var connectorStatuses: [ConnectorStatus] = []
     @Published private(set) var audioRouteDescription: String
+    @Published var locationMode: DemoLocationMode = .outside {
+        didSet {
+            guard oldValue != locationMode else { return }
+            applyLocationMode(locationMode, logAction: true)
+        }
+    }
+    @Published private(set) var activeMoment: Moment?
+    @Published private(set) var momentDiagnostics: String
+    @Published private(set) var locationSummary: String
+    @Published private(set) var currentPOILabel: String?
 
     private let kilroyConnector: KilroyDropsConnector
     private let calendarConnector: CalendarConnector
     private let audioService: AudioWhisperService
+    private let triggerEngine: TriggerEngine
+    private var cancellables: Set<AnyCancellable> = []
 
     init(
         agent: Agent = Agent(),
         demoLog: DemoLogService = DemoLogService(),
         kilroyConnector: KilroyDropsConnector = KilroyDropsConnector(),
         calendarConnector: CalendarConnector = CalendarConnector(),
-        audioService: AudioWhisperService? = nil
+        audioService: AudioWhisperService? = nil,
+        triggerEngine: TriggerEngine = TriggerEngine()
     ) {
         self.agent = agent
         self.demoLog = demoLog
@@ -76,16 +90,30 @@ final class AppViewModel: ObservableObject {
         self.calendarConnector = calendarConnector
         let resolvedAudioService = audioService ?? AudioWhisperService()
         self.audioService = resolvedAudioService
-        self.context = Context(placeId: "frontier_tower", timestamp: Date())
+        self.triggerEngine = triggerEngine
+        self.context = Context(placeId: triggerEngine.zone.id, timestamp: Date())
         self.connectorStatuses = [
             ConnectorStatus(name: kilroyConnector.name, description: kilroyConnector.description, lastSynced: nil, state: .idle),
             ConnectorStatus(name: calendarConnector.name, description: calendarConnector.description, lastSynced: nil, state: .idle)
         ]
         self.audioRouteDescription = resolvedAudioService.currentRouteDescription
+        self.activeMoment = nil
+        self.momentDiagnostics = "No moment yet"
+        self.locationSummary = "Outside zone"
+        self.currentPOILabel = nil
 
         resolvedAudioService.routeDescriptionDidChange = { [weak self] description in
             self?.audioRouteDescription = description
         }
+
+        applyLocationMode(locationMode, logAction: false)
+
+        agent.memoryStore.$snapshot
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.reevaluateMoments(reason: "Memory updated", logEvenIfMissing: false)
+            }
+            .store(in: &cancellables)
     }
 
     func bootstrap() async {
@@ -95,7 +123,7 @@ final class AppViewModel: ObservableObject {
     func triggerArrival() {
         softHapticTap()
         audioService.playWelcome()
-        context.placeId = "frontier_tower"
+        forceLocationMode(.arrival)
         context.timestamp = Date()
         demoLog.append("Arrival event triggered", category: .action)
         Task {
@@ -116,12 +144,30 @@ final class AppViewModel: ObservableObject {
         await refreshDrops(reason: "Manual floor trigger")
     }
 
+    func triggerManualMoment(_ manual: ManualMoment) {
+        let decision = triggerEngine.manualTrigger(
+            manualID: manual.manualID,
+            snapshot: agent.memoryStore.snapshot
+        )
+
+        switch decision.status {
+        case .triggered:
+            if let moment = decision.moment {
+                activate(moment: moment, reason: manual.displayName, decisionMessage: decision.message)
+            }
+        case .missingLocation, .outsideZone, .noMatch:
+            momentDiagnostics = decision.message
+            demoLog.append("Manual \(manual.displayName) skipped: \(decision.message)", category: .info)
+        }
+    }
+
     func storePermissionToken() {
         let trimmed = permissionTokenInput.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
         agent.memoryStore.recordPermissionToken(trimmed)
         permissionTokenInput = ""
         demoLog.append("Permission token stored", category: .action)
+        reevaluateMoments(reason: "Permission token updated", logEvenIfMissing: false)
         Task {
             await refreshDrops(reason: "Permission token updated")
         }
@@ -208,9 +254,167 @@ final class AppViewModel: ObservableObject {
         }
     }
 
+    func forceLocationMode(_ mode: DemoLocationMode) {
+        if locationMode == mode {
+            applyLocationMode(mode, logAction: true)
+        } else {
+            locationMode = mode
+        }
+    }
+
+    private func applyLocationMode(_ mode: DemoLocationMode, logAction: Bool) {
+        let zone = triggerEngine.zone
+        let coordinate = mode.coordinate(in: zone)
+        context.latitude = coordinate?.latitude
+        context.longitude = coordinate?.longitude
+        context.placeId = mode == .outside ? nil : (coordinate == nil ? nil : zone.id)
+        context.timestamp = Date()
+
+        currentPOILabel = mode.poiLabel(in: zone)
+        if let poiName = currentPOILabel {
+            locationSummary = "\(mode.displayName) – \(poiName)"
+        } else {
+            locationSummary = mode.displayName
+        }
+
+        if logAction {
+            demoLog.append("Location mode → \(mode.displayName)", category: .action)
+            reevaluateMoments(reason: "Location mode \(mode.displayName)")
+        }
+    }
+
+    private func reevaluateMoments(reason: String, logEvenIfMissing: Bool = true) {
+        let decision = triggerEngine.evaluate(
+            context: context,
+            snapshot: agent.memoryStore.snapshot
+        )
+
+        switch decision.status {
+        case .triggered:
+            if let moment = decision.moment {
+                activate(moment: moment, reason: reason, decisionMessage: decision.message)
+            }
+        case .missingLocation, .outsideZone, .noMatch:
+            activeMoment = nil
+            momentDiagnostics = decision.message
+            if logEvenIfMissing {
+                demoLog.append("\(reason): \(decision.message)", category: .info)
+            }
+        }
+    }
+
+    private func activate(moment: Moment, reason: String, decisionMessage: String) {
+        activeMoment = moment
+        momentDiagnostics = decisionMessage
+        triggerEngine.markDelivered(moment)
+        demoLog.append("Moment ready (\(moment.title)) via \(reason). \(decisionMessage)", category: .action)
+        softHapticTap()
+        playWhisper(for: moment)
+    }
+
+    private func playWhisper(for moment: Moment) {
+        switch moment.whisperAudioKey {
+        case "psst_welcome_frontier":
+            audioService.playWelcome()
+        case "psst_drop_here":
+            audioService.playDropHere()
+        case "psst_want_to_open":
+            audioService.playWantToOpen()
+        default:
+            audioService.playWantToOpen()
+        }
+    }
+
     private func softHapticTap() {
         let generator = UIImpactFeedbackGenerator(style: .soft)
         generator.prepare()
         generator.impactOccurred(intensity: 0.8)
+    }
+}
+
+extension AppViewModel {
+    enum DemoLocationMode: String, CaseIterable, Identifiable {
+        case outside
+        case arrival
+        case coffee
+        case drop
+
+        var id: String { rawValue }
+
+        var displayName: String {
+            switch self {
+            case .outside:
+                return "Outside Zone"
+            case .arrival:
+                return "Arrival Perimeter"
+            case .coffee:
+                return "Coffee Nook"
+            case .drop:
+                return "Drop Corner"
+            }
+        }
+
+        func coordinate(in zone: ContextualZone) -> ContextualZone.Coordinate? {
+            switch self {
+            case .outside:
+                return ContextualZone.Coordinate(
+                    latitude: zone.center.latitude + 0.01,
+                    longitude: zone.center.longitude + 0.01
+                )
+            case .arrival:
+                return zone.pois.first(where: { $0.id == "frontier_arrival" })?.coordinate ?? zone.center
+            case .coffee:
+                return zone.pois.first(where: { $0.id == "frontier_coffee" })?.coordinate ?? zone.center
+            case .drop:
+                return zone.pois.first(where: { $0.id == "frontier_drop_corner" })?.coordinate ?? zone.center
+            }
+        }
+
+        func poiLabel(in zone: ContextualZone) -> String? {
+            switch self {
+            case .outside:
+                return nil
+            case .arrival:
+                return zone.pois.first(where: { $0.id == "frontier_arrival" })?.name
+            case .coffee:
+                return zone.pois.first(where: { $0.id == "frontier_coffee" })?.name
+            case .drop:
+                return zone.pois.first(where: { $0.id == "frontier_drop_corner" })?.name
+            }
+        }
+    }
+
+    enum ManualMoment: String, CaseIterable, Identifiable {
+        case arrival
+        case coffee
+        case drop
+
+        var id: String { rawValue }
+
+        var displayName: String {
+            switch self {
+            case .arrival:
+                return "Moment 1 – Arrival"
+            case .coffee:
+                return "Moment 2 – Coffee"
+            case .drop:
+                return "Moment 3 – Drop"
+            }
+        }
+
+        var buttonLabel: String {
+            "Trigger \(displayName)"
+        }
+
+        var manualID: String {
+            switch self {
+            case .arrival:
+                return "moment.arrival"
+            case .coffee:
+                return "moment.coffee"
+            case .drop:
+                return "moment.drop"
+            }
+        }
     }
 }
