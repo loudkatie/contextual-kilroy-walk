@@ -18,6 +18,12 @@ can stay aligned.
   2. Coffee / Quiet Spot — friendly nearby interstitial
   3. Drop Moment — gated media surfaced via KilroyDrops
 
+## Design continuity
+
+- Visual north star + palette notes: `docs/DesignNotes.md`.
+- Presence UI entrypoint: `KilroyWalkApp/KilroyWalkApp/App/ContextualPresenceScreen.swift`.
+- Demo tools: long-press the wordmark to open the controls + demo log sheet.
+
 ## Reliability + controls
 
 - Always keep manual fallbacks during testing: “Trigger Arrival”,

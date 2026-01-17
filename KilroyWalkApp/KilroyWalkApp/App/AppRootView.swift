@@ -2,21 +2,20 @@ import SwiftUI
 
 struct AppRootView: View {
     @EnvironmentObject private var viewModel: AppViewModel
+    @State private var showSplash = true
 
     var body: some View {
-        TabView {
-            NavigationStack {
-                HostPresenceView()
-            }
-            .tabItem {
-                Label("Presence", systemImage: "sparkles")
-            }
+        ZStack {
+            ContextualPresenceScreen()
+                .opacity(showSplash ? 0.0 : 1.0)
 
-            NavigationStack {
-                DropsView()
-            }
-            .tabItem {
-                Label("Drops", systemImage: "list.bullet.rectangle")
+            if showSplash {
+                ContextualSplashView {
+                    withAnimation(.easeOut(duration: 0.8)) {
+                        showSplash = false
+                    }
+                }
+                .transition(.opacity)
             }
         }
         .task {

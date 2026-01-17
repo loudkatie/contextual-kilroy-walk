@@ -8,7 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		0B5CBDD3CE03EC8AA5286237 /* psst_welcome_frontier.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 28BB4AF160EFCA03EDE614BE /* psst_welcome_frontier.m4a */; };
+		0F8C2B9D4E7A11B3C9D5E610 /* 11_psst-somethings-here.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 5B6A47C8D2F1A9E8B7C6D5E4 /* 11_psst-somethings-here.mp3 */; };
+		1A2B3C4D5E6F708192A3B4C5 /* 11_psst-welcome.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 7C8D9EA0B1C2D3E4F5A6B7C8 /* 11_psst-welcome.mp3 */; };
 		10413B07F9EB9C42228B91B1 /* ContextualCore in Frameworks */ = {isa = PBXBuildFile; productRef = 5C9591AC6B94876F83DD27D3 /* ContextualCore */; };
+		2B3C4D5E6F708192A3B4C5D6 /* 11_wanna-open.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 9D8C7B6A5E4D3C2B1A0F9E8D /* 11_wanna-open.mp3 */; };
 		32D48B525FA40F8B8CFA4028 /* DemoLogListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3127AE79AB131F8B1F84DC4B /* DemoLogListView.swift */; };
 		3BD348E893B3E7F8DF9E24F5 /* psst_want_to_open.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 4DEB365F79EF52E6122AA9DC /* psst_want_to_open.m4a */; };
 		4195FC916466A7BBFC8AA357 /* DemoControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96B724074EA80DCE524CD561 /* DemoControlsView.swift */; };
@@ -22,6 +25,12 @@
 		C26E117C5364BC0ED8BD5ADF /* KilroyWalkAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A5BB14FFA252B953AA271A /* KilroyWalkAppApp.swift */; };
 		D90281109C9507C811CFF1EF /* DropsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B19C5E6D012B21786E31B682 /* DropsView.swift */; };
 		DC4858D4107983BE6A402A64 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 33672422EA28FF55E86C08F7 /* Preview Assets.xcassets */; };
+		E20D21452F196AB900A69FCC /* ContextualPresenceScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20D21442F196AB300A69FCC /* ContextualPresenceScreen.swift */; };
+		E2CA28C62F18661D00731B0E /* ContextualStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2CA28C52F1865F500731B0E /* ContextualStyle.swift */; };
+		E2CA28CE2F18664800731B0E /* ContextualSplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2CA28CD2F18664300731B0E /* ContextualSplashView.swift */; };
+		E2CA28D02F18673000731B0E /* ContextualGlyph.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2CA28CF2F18672B00731B0E /* ContextualGlyph.swift */; };
+		E2CA28D22F18675F00731B0E /* BreathingOrbView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2CA28D12F18675A00731B0E /* BreathingOrbView.swift */; };
+		E2CA28D42F18678100731B0E /* StardustTraceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2CA28D32F18677C00731B0E /* StardustTraceView.swift */; };
 		ED7921ACDEA2C1107030CD98 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD3BEF3F6536DD168EFE262A /* HomeView.swift */; };
 /* End PBXBuildFile section */
 
@@ -33,15 +42,25 @@
 		33672422EA28FF55E86C08F7 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		35A5BB14FFA252B953AA271A /* KilroyWalkAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KilroyWalkAppApp.swift; sourceTree = "<group>"; };
 		4DEB365F79EF52E6122AA9DC /* psst_want_to_open.m4a */ = {isa = PBXFileReference; lastKnownFileType = audio.m4a; path = psst_want_to_open.m4a; sourceTree = "<group>"; };
+		5B6A47C8D2F1A9E8B7C6D5E4 /* 11_psst-somethings-here.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "11_psst-somethings-here.mp3"; sourceTree = "<group>"; };
 		63300CFE1228FB94687B6665 /* AppRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRootView.swift; sourceTree = "<group>"; };
 		677397C85EB2809FB7DF1D4F /* psst_drop_here.m4a */ = {isa = PBXFileReference; lastKnownFileType = audio.m4a; path = psst_drop_here.m4a; sourceTree = "<group>"; };
+		7C8D9EA0B1C2D3E4F5A6B7C8 /* 11_psst-welcome.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "11_psst-welcome.mp3"; sourceTree = "<group>"; };
 		893CB4F55D6B8697568FD568 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		957AAC3F5FF9C21AA5077855 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		96B724074EA80DCE524CD561 /* DemoControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoControlsView.swift; sourceTree = "<group>"; };
 		AD3BEF3F6536DD168EFE262A /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		B19C5E6D012B21786E31B682 /* DropsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropsView.swift; sourceTree = "<group>"; };
 		B48C411E7795BB20EA11D85C /* ConnectorStatusTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectorStatusTile.swift; sourceTree = "<group>"; };
+		9D8C7B6A5E4D3C2B1A0F9E8D /* 11_wanna-open.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "11_wanna-open.mp3"; sourceTree = "<group>"; };
 		DEE376A469A9B1E651BA95EA /* AppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewModel.swift; sourceTree = "<group>"; };
+		E20D21442F196AB300A69FCC /* ContextualPresenceScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextualPresenceScreen.swift; sourceTree = "<group>"; };
+		E2CA28C52F1865F500731B0E /* ContextualStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextualStyle.swift; sourceTree = "<group>"; };
+		E2CA28CD2F18664300731B0E /* ContextualSplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextualSplashView.swift; sourceTree = "<group>"; };
+		E2CA28CF2F18672B00731B0E /* ContextualGlyph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextualGlyph.swift; sourceTree = "<group>"; };
+		E2CA28D12F18675A00731B0E /* BreathingOrbView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BreathingOrbView.swift; sourceTree = "<group>"; };
+		E2CA28D32F18677C00731B0E /* StardustTraceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StardustTraceView.swift; sourceTree = "<group>"; };
+		E2E052CA2F1AECF8008E8678 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		FCFCE070AB478E94A2CDD0E5 /* DropDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DropDetailView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -87,6 +106,9 @@
 		749A9A5B5A570684F5A45BB6 /* Audio */ = {
 			isa = PBXGroup;
 			children = (
+				7C8D9EA0B1C2D3E4F5A6B7C8 /* 11_psst-welcome.mp3 */,
+				5B6A47C8D2F1A9E8B7C6D5E4 /* 11_psst-somethings-here.mp3 */,
+				9D8C7B6A5E4D3C2B1A0F9E8D /* 11_wanna-open.mp3 */,
 				28BB4AF160EFCA03EDE614BE /* psst_welcome_frontier.m4a */,
 				677397C85EB2809FB7DF1D4F /* psst_drop_here.m4a */,
 				4DEB365F79EF52E6122AA9DC /* psst_want_to_open.m4a */,
@@ -127,9 +149,22 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		E2CA28C42F1865ED00731B0E /* Design */ = {
+			isa = PBXGroup;
+			children = (
+				E2CA28D32F18677C00731B0E /* StardustTraceView.swift */,
+				E2CA28D12F18675A00731B0E /* BreathingOrbView.swift */,
+				E2CA28CF2F18672B00731B0E /* ContextualGlyph.swift */,
+				E2CA28CD2F18664300731B0E /* ContextualSplashView.swift */,
+				E2CA28C52F1865F500731B0E /* ContextualStyle.swift */,
+			);
+			path = Design;
+			sourceTree = "<group>";
+		};
 		F1ADAB2C2C5BB36A89E123AA /* App */ = {
 			isa = PBXGroup;
 			children = (
+				E20D21442F196AB300A69FCC /* ContextualPresenceScreen.swift */,
 				35A5BB14FFA252B953AA271A /* KilroyWalkAppApp.swift */,
 				63300CFE1228FB94687B6665 /* AppRootView.swift */,
 				AD3BEF3F6536DD168EFE262A /* HomeView.swift */,
@@ -143,6 +178,8 @@
 		F536940FA2ED55B66258C794 /* KilroyWalkApp */ = {
 			isa = PBXGroup;
 			children = (
+				E2E052CA2F1AECF8008E8678 /* Info.plist */,
+				E2CA28C42F1865ED00731B0E /* Design */,
 				F1ADAB2C2C5BB36A89E123AA /* App */,
 				77DBE3E56FDA449F888B9D6B /* Components */,
 				120039A40DB69F89B3BCF3F1 /* ViewModels */,
@@ -210,6 +247,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1A2B3C4D5E6F708192A3B4C5 /* 11_psst-welcome.mp3 in Resources */,
+				0F8C2B9D4E7A11B3C9D5E610 /* 11_psst-somethings-here.mp3 in Resources */,
+				2B3C4D5E6F708192A3B4C5D6 /* 11_wanna-open.mp3 in Resources */,
 				0B5CBDD3CE03EC8AA5286237 /* psst_welcome_frontier.m4a in Resources */,
 				AC37C483164CE8C39E0D2B48 /* psst_drop_here.m4a in Resources */,
 				3BD348E893B3E7F8DF9E24F5 /* psst_want_to_open.m4a in Resources */,
@@ -227,11 +267,17 @@
 			files = (
 				B103012D72148E883A630F61 /* AudioWhisperService.swift in Sources */,
 				6F210385128962A9B7A20F32 /* AppViewModel.swift in Sources */,
+				E2CA28CE2F18664800731B0E /* ContextualSplashView.swift in Sources */,
 				32D48B525FA40F8B8CFA4028 /* DemoLogListView.swift in Sources */,
+				E2CA28C62F18661D00731B0E /* ContextualStyle.swift in Sources */,
+				E20D21452F196AB900A69FCC /* ContextualPresenceScreen.swift in Sources */,
 				C26E117C5364BC0ED8BD5ADF /* KilroyWalkAppApp.swift in Sources */,
+				E2CA28D22F18675F00731B0E /* BreathingOrbView.swift in Sources */,
 				8045E1A1F4E45E6D84928B95 /* DropDetailView.swift in Sources */,
 				4195FC916466A7BBFC8AA357 /* DemoControlsView.swift in Sources */,
 				A3F338167DE2DCFB5F1D1EDD /* ConnectorStatusTile.swift in Sources */,
+				E2CA28D42F18678100731B0E /* StardustTraceView.swift in Sources */,
+				E2CA28D02F18673000731B0E /* ContextualGlyph.swift in Sources */,
 				854968CC78621EED7B4413D2 /* AppRootView.swift in Sources */,
 				ED7921ACDEA2C1107030CD98 /* HomeView.swift in Sources */,
 				D90281109C9507C811CFF1EF /* DropsView.swift in Sources */,
@@ -256,7 +302,7 @@
 				GCC_WARN_SHADOW = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -285,7 +331,7 @@
 				GCC_WARN_SHADOW = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -304,10 +350,10 @@
 				DEVELOPMENT_ASSET_PATHS = "\"KilroyWalkApp/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = VR88MM2R4N;
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = "$(SRCROOT)/KilroyWalkApp/Resources/Info.plist";
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = NO;
-				INFOPLIST_KEY_UILaunchScreen_Generation = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = KilroyWalkApp/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Contextual - Kilroy Demo";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -318,10 +364,13 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kilroy.walkdemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
-				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -335,10 +384,10 @@
 				DEVELOPMENT_ASSET_PATHS = "\"KilroyWalkApp/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = VR88MM2R4N;
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = "$(SRCROOT)/KilroyWalkApp/Resources/Info.plist";
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = NO;
-				INFOPLIST_KEY_UILaunchScreen_Generation = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = KilroyWalkApp/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Contextual - Kilroy Demo";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -349,10 +398,13 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.kilroy.walkdemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
-				SUPPORTED_PLATFORMS = "iphonesimulator iphoneos";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

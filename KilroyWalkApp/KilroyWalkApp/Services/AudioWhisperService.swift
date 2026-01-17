@@ -33,21 +33,39 @@ final class AudioWhisperService {
     }
 
     func playWelcome() {
-        playClip(named: "psst_welcome_frontier", fallbackText: "Welcome to Frontier Tower.")
+        playClip(
+            preferred: [
+                WhisperClip(name: "11_psst-welcome", ext: "mp3"),
+                WhisperClip(name: "psst_welcome_frontier", ext: "m4a")
+            ],
+            fallbackText: "Welcome to Frontier Tower."
+        )
     }
 
     func playDropHere() {
-        playClip(named: "psst_drop_here", fallbackText: "There's a drop here.")
+        playClip(
+            preferred: [
+                WhisperClip(name: "11_psst-somethings-here", ext: "mp3"),
+                WhisperClip(name: "psst_drop_here", ext: "m4a")
+            ],
+            fallbackText: "There's a drop here."
+        )
     }
 
     func playWantToOpen() {
-        playClip(named: "psst_want_to_open", fallbackText: "Want to open it?")
+        playClip(
+            preferred: [
+                WhisperClip(name: "11_wanna-open", ext: "mp3"),
+                WhisperClip(name: "psst_want_to_open", ext: "m4a")
+            ],
+            fallbackText: "Want to open it?"
+        )
     }
 
-    private func playClip(named clip: String, fallbackText: String) {
+    private func playClip(preferred clips: [WhisperClip], fallbackText: String) {
         do {
             try configureAudioSession()
-            guard let url = Bundle.main.url(forResource: clip, withExtension: "m4a") else {
+            guard let url = locateClip(in: clips) else {
                 throw AudioError.missingClip
             }
             audioPlayer = try AVAudioPlayer(contentsOf: url)
@@ -90,6 +108,15 @@ final class AudioWhisperService {
         speechSynthesizer.speak(utterance)
     }
 
+    private func locateClip(in clips: [WhisperClip]) -> URL? {
+        for clip in clips {
+            if let url = Bundle.main.url(forResource: clip.name, withExtension: clip.ext) {
+                return url
+            }
+        }
+        return nil
+    }
+
     private static func describeCurrentRoute(using session: AVAudioSession) -> String {
         guard let output = session.currentRoute.outputs.first else {
             return "Speaker"
@@ -105,4 +132,9 @@ final class AudioWhisperService {
             return "Speaker"
         }
     }
+}
+
+private struct WhisperClip {
+    let name: String
+    let ext: String
 }
