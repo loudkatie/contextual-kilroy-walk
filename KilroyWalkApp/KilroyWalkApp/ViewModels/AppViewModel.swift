@@ -65,6 +65,15 @@ final class AppViewModel: ObservableObject {
     @Published var agentServerURLInput: String = "" {
         didSet { persistAgentSettings() }
     }
+    @Published var selectedVenueID: String = "" {
+        didSet { applyVenueSelection() }
+    }
+    @Published var selectedPOIID: String = "" {
+        didSet {
+            guard !selectedPOIID.isEmpty else { return }
+            setLocationToPOI(selectedPOIID, logAction: true)
+        }
+    }
     @Published var locationMode: DemoLocationMode = .outside {
         didSet {
             guard oldValue != locationMode else { return }
@@ -81,13 +90,14 @@ final class AppViewModel: ObservableObject {
     private let kilroyConnector: KilroyDropsConnector
     private let calendarConnector: CalendarConnector
     private let audioService: AudioWhisperService
-    private let triggerEngine: TriggerEngine
+    private var triggerEngine: TriggerEngine
     private let agentPlanner: AgentPlanner
     private let agentAPIClient: AgentAPIClient
     private var cancellables: Set<AnyCancellable> = []
     private var recentEvents: [AgentEvent] = []
     private let maxStoredEvents = 20
     private var planTask: Task<Void, Never>?
+    private var currentVenue: DemoVenue
 
     init(
         agent: Agent = Agent(),
@@ -105,10 +115,15 @@ final class AppViewModel: ObservableObject {
         self.calendarConnector = calendarConnector
         let resolvedAudioService = audioService ?? AudioWhisperService()
         self.audioService = resolvedAudioService
-        self.triggerEngine = triggerEngine
+        let venueID = loadVenueID()
+        let defaultVenue = FrontierWalkDemoContent.venue(id: venueID)
+            ?? FrontierWalkDemoContent.venues.first
+            ?? DemoVenue(id: "frontier", name: "Frontier Tower", zone: FrontierWalkDemoContent.zone, moments: FrontierWalkDemoContent.orderedMoments)
+        self.currentVenue = defaultVenue
+        self.triggerEngine = TriggerEngine(zone: defaultVenue.zone, moments: defaultVenue.moments)
         self.agentPlanner = agentPlanner
         self.agentAPIClient = agentAPIClient
-        self.context = Context(placeId: triggerEngine.zone.id, timestamp: Date())
+        self.context = Context(placeId: defaultVenue.zone.id, timestamp: Date())
         self.connectorStatuses = [
             ConnectorStatus(name: kilroyConnector.name, description: kilroyConnector.description, lastSynced: nil, state: .idle),
             ConnectorStatus(name: calendarConnector.name, description: calendarConnector.description, lastSynced: nil, state: .idle)
@@ -121,6 +136,7 @@ final class AppViewModel: ObservableObject {
         self.currentPOILabel = nil
         self.agentMode = loadAgentMode()
         self.agentServerURLInput = loadAgentURL()
+        self.selectedVenueID = defaultVenue.id
 
         resolvedAudioService.routeDescriptionDidChange = { [weak self] description in
             self?.audioRouteDescription = description
@@ -271,6 +287,14 @@ final class AppViewModel: ObservableObject {
         connectorStatuses
     }
 
+    func availableVenues() -> [DemoVenue] {
+        FrontierWalkDemoContent.venues
+    }
+
+    func availablePOIs() -> [ContextualZone.PointOfInterest] {
+        triggerEngine.zone.pois
+    }
+
     private func refreshDrops(reason: String) async {
         var combined: [Drop] = []
         var errors: [String] = []
@@ -336,13 +360,13 @@ final class AppViewModel: ObservableObject {
 
     private func applyLocationMode(_ mode: DemoLocationMode, logAction: Bool) {
         let zone = triggerEngine.zone
-        let coordinate = mode.coordinate(in: zone)
+        let coordinate = mode.coordinate(in: zone, poiLookup: poiByKind)
         context.latitude = coordinate?.latitude
         context.longitude = coordinate?.longitude
         context.placeId = mode == .outside ? nil : (coordinate == nil ? nil : zone.id)
         context.timestamp = Date()
 
-        currentPOILabel = mode.poiLabel(in: zone)
+        currentPOILabel = mode.poiLabel(in: zone, poiLookup: poiByKind)
         if let poiName = currentPOILabel {
             locationSummary = "\(mode.displayName) – \(poiName)"
         } else {
@@ -436,6 +460,36 @@ final class AppViewModel: ObservableObject {
         activeMoment = nil
         consentState = consent
         momentDiagnostics = message
+    }
+
+    private func applyVenueSelection() {
+        guard let venue = FrontierWalkDemoContent.venue(id: selectedVenueID) else { return }
+        currentVenue = venue
+        triggerEngine = TriggerEngine(zone: venue.zone, moments: venue.moments)
+        context.placeId = venue.zone.id
+        locationMode = .outside
+        selectedPOIID = ""
+        demoLog.append("Venue → \(venue.name)", category: .action)
+        persistVenueID()
+    }
+
+    private func setLocationToPOI(_ poiID: String, logAction: Bool) {
+        guard let poi = triggerEngine.zone.pois.first(where: { $0.id == poiID }) else { return }
+        context.latitude = poi.coordinate.latitude
+        context.longitude = poi.coordinate.longitude
+        context.placeId = triggerEngine.zone.id
+        context.timestamp = Date()
+        currentPOILabel = poi.name
+        locationSummary = "POI – \(poi.name)"
+        if logAction {
+            recordEvent(kind: .location, detail: "poi_selected", metadata: ["poi": poi.id])
+            demoLog.append("POI → \(poi.name)", category: .action)
+            reevaluateMoments(reason: "POI \(poi.name)")
+        }
+    }
+
+    private func poiByKind(_ kind: ContextualZone.PointOfInterest.Kind, in zone: ContextualZone) -> ContextualZone.PointOfInterest? {
+        zone.pois.first { $0.kind == kind }
     }
 
     private func requestRemotePlan(reason: String, manualID: String?) {
@@ -541,6 +595,14 @@ final class AppViewModel: ObservableObject {
         let stored = UserDefaults.standard.string(forKey: "contextual.agentMode")
         return AgentMode(rawValue: stored ?? "") ?? .local
     }
+
+    private func persistVenueID() {
+        UserDefaults.standard.set(selectedVenueID, forKey: "contextual.venueID")
+    }
+
+    private func loadVenueID() -> String {
+        UserDefaults.standard.string(forKey: "contextual.venueID") ?? "frontier"
+    }
 }
 
 extension AppViewModel {
@@ -581,7 +643,10 @@ extension AppViewModel {
             }
         }
 
-        func coordinate(in zone: ContextualZone) -> ContextualZone.Coordinate? {
+        func coordinate(
+            in zone: ContextualZone,
+            poiLookup: (ContextualZone.PointOfInterest.Kind, ContextualZone) -> ContextualZone.PointOfInterest?
+        ) -> ContextualZone.Coordinate? {
             switch self {
             case .outside:
                 return ContextualZone.Coordinate(
@@ -589,24 +654,27 @@ extension AppViewModel {
                     longitude: zone.center.longitude + 0.01
                 )
             case .arrival:
-                return zone.pois.first(where: { $0.id == "frontier_arrival" })?.coordinate ?? zone.center
+                return poiLookup(.arrival, zone)?.coordinate ?? zone.center
             case .coffee:
-                return zone.pois.first(where: { $0.id == "frontier_coffee" })?.coordinate ?? zone.center
+                return poiLookup(.coffee, zone)?.coordinate ?? zone.center
             case .drop:
-                return zone.pois.first(where: { $0.id == "frontier_drop_corner" })?.coordinate ?? zone.center
+                return poiLookup(.drop, zone)?.coordinate ?? zone.center
             }
         }
 
-        func poiLabel(in zone: ContextualZone) -> String? {
+        func poiLabel(
+            in zone: ContextualZone,
+            poiLookup: (ContextualZone.PointOfInterest.Kind, ContextualZone) -> ContextualZone.PointOfInterest?
+        ) -> String? {
             switch self {
             case .outside:
                 return nil
             case .arrival:
-                return zone.pois.first(where: { $0.id == "frontier_arrival" })?.name
+                return poiLookup(.arrival, zone)?.name
             case .coffee:
-                return zone.pois.first(where: { $0.id == "frontier_coffee" })?.name
+                return poiLookup(.coffee, zone)?.name
             case .drop:
-                return zone.pois.first(where: { $0.id == "frontier_drop_corner" })?.name
+                return poiLookup(.drop, zone)?.name
             }
         }
     }

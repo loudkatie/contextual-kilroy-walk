@@ -13,6 +13,7 @@ Last updated: 2026-01-17
 - Experience is screen-light: haptic on wrist, optional whisper in ear.
 - Tink learns via behavior, not forms; long-term preferences persist.
 - Each user has a persistent AI thread; one agent instance per user.
+- Vertical spaces are first-class: floor bands and tight micro-zones (~4 ft).
 
 ## Experience flow (v0 demo)
 1. User crosses a geolocation gate (Contextual Zone).

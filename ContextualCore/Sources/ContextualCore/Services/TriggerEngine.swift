@@ -72,6 +72,7 @@ public final class TriggerEngine {
         let eligible = catalog
             .filter { passesTrigger($0, poi: poi) }
             .filter { passesGating($0, snapshot: snapshot) }
+            .filter { passesFloorBand($0, context: context) }
             .filter { passesCooldown($0, now: now) }
             .sorted { lhs, rhs in
                 if lhs.priority == rhs.priority {
@@ -84,7 +85,7 @@ public final class TriggerEngine {
             return Decision(
                 status: .noMatch,
                 moment: nil,
-                explanation: diagnostics(for: poi, snapshot: snapshot, now: now),
+                explanation: diagnostics(for: poi, snapshot: snapshot, context: context, now: now),
                 consentState: .idle,
                 eligibility: false
             )
@@ -180,6 +181,12 @@ public final class TriggerEngine {
         return now.timeIntervalSince(last) >= moment.cooldownSeconds
     }
 
+    private func passesFloorBand(_ moment: Moment, context: Context) -> Bool {
+        guard let required = moment.metadata?["floorBand"]?.lowercased() else { return true }
+        guard let current = context.floorBand?.lowercased() else { return false }
+        return current == required
+    }
+
     private func remainingCooldown(for moment: Moment, now: Date) -> TimeInterval? {
         guard let last = lastTriggerDates[moment.id] else { return nil }
         let elapsed = now.timeIntervalSince(last)
@@ -190,6 +197,7 @@ public final class TriggerEngine {
     private func diagnostics(
         for poi: ContextualZone.PointOfInterest?,
         snapshot: MemoryStore.Snapshot,
+        context: Context,
         now: Date
     ) -> String {
         let scoped = catalog.filter { passesTrigger($0, poi: poi) }
@@ -203,6 +211,11 @@ public final class TriggerEngine {
                 .compactMap { $0.gatingToken?.uppercased() }
                 .joined(separator: ", ")
             return "Waiting on tokens: \(tokens)"
+        }
+
+        let floorBlocked = scoped.filter { !passesFloorBand($0, context: context) }
+        if !floorBlocked.isEmpty {
+            return "Wrong floor for \(floorBlocked.count) moment(s)."
         }
 
         let cooling = scoped.filter { !passesCooldown($0, now: now) }

@@ -5,9 +5,18 @@ struct DemoControlsView: View {
 
     var body: some View {
         Form {
+            Section("Venue") {
+                Picker("Demo Venue", selection: $viewModel.selectedVenueID) {
+                    ForEach(viewModel.availableVenues()) { venue in
+                        Text(venue.name).tag(venue.id)
+                    }
+                }
+                .pickerStyle(.menu)
+            }
+
             Section("Context") {
                 LabeledContent("Place", value: viewModel.context.placeId ?? "Unknown")
-                TextField("Floor band (e.g. SKY-LOBBY)", text: $viewModel.floorBandInput)
+                TextField("Floor band (e.g. FT-LOBBY / AWS-2)", text: $viewModel.floorBandInput)
                     .textInputAutocapitalization(.characters)
                     .autocorrectionDisabled()
                 Button("Set FloorBand") {
@@ -15,7 +24,7 @@ struct DemoControlsView: View {
                 }
             }
 
-            Section("Frontier Zone") {
+            Section("Zone") {
                 Picker("Location Mode", selection: $viewModel.locationMode) {
                     ForEach(AppViewModel.DemoLocationMode.allCases) { mode in
                         Text(mode.displayName).tag(mode)
@@ -55,6 +64,16 @@ struct DemoControlsView: View {
                         viewModel.triggerManualMoment(manual)
                     }
                 }
+            }
+
+            Section("POI Teleport") {
+                Picker("Point of Interest", selection: $viewModel.selectedPOIID) {
+                    Text("Select POI").tag("")
+                    ForEach(viewModel.availablePOIs()) { poi in
+                        Text(poi.name).tag(poi.id)
+                    }
+                }
+                .pickerStyle(.menu)
             }
 
             Section("Manual Triggers") {

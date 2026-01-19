@@ -17,6 +17,7 @@ can stay aligned.
 - Demo is a 2–3 block walk around Frontier Tower in SoMa. The goal is to
   show proactive “Jeeves” host cards that feel magical because they are
   simple and reliable.
+- Secondary demo venue: AWS Loft (525 Market, Floor 2) for Llama Lounge.
 - Core beats: haptic ping → whisper audio (pre-recorded if possible) →
   guided host card with big button choices. No empty chat screens.
 - Moments for this iteration:
