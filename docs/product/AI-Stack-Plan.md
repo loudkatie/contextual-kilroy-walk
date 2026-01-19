@@ -51,6 +51,7 @@ Last updated: 2026-01-17
 - Output: strict moment schema (use JSON schema or function calling).
 - Persistence: lightweight JSON store for user->thread_id mapping.
 - Demo server implementation lives in `server/` and returns `Moment` + `AgentPlan`.
+- Floor-band metadata gates moments for vertical precision.
 
 ### Phase 2 (partner-ready)
 - Connector auth flows (OAuth, token vault).

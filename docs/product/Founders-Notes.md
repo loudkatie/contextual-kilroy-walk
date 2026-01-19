@@ -41,6 +41,12 @@ Last updated: 2026-01-17
 - Design gets refined once agent loop and trigger reliability are proven.
 - Budget target for demo: ~$50 total (bootstrapped).
 
+## Vision addendum (Jan 17)
+- Two flagship demo zones: Frontier Tower (16 floors) + AWS Loft (Floor 2).
+- Dense, layered triggers with micro-radii (~4 ft) to prove precision.
+- Vertical orientation is required for trust; floor bands are first-class.
+- Tink learns primarily from behavior: movement, taps, ignores, and delays.
+
 ## Jan 26 product doc highlights
 - Proactive, not reactive: no prompt-first interactions or chat UI.
 - Ambient, not addictive: success metric is reduced cognitive load, not engagement.

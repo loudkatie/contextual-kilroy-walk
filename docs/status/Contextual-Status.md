@@ -28,6 +28,7 @@ Last updated: 2026-01-17
 - **AgentPlanner** now creates a strict plan schema from moments.
 - **Remote planner** optional: demo server + iOS toggle added.
 - **Two venues** wired: Frontier Tower + AWS Loft (Floor 2) with micro POIs.
+- **Floor gating** is enforced via floor band metadata on moments.
 
 ## Why it still looks “flat”
 SwiftUI gradient layers can approximate the orb, but the reference orb is photographic with

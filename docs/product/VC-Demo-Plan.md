@@ -5,6 +5,7 @@ Last updated: 2026-01-17
 ## Goal
 - Ship a believable, proactive Tink loop on iPhone with minimal cost.
 - Demonstrate: place + identity + behavior -> whisper -> host card.
+- Emphasize vertical precision with floor gating and micro-zones.
 
 ## Demo beats (Frontier Tower)
 1. Arrival: welcome whisper + host card.

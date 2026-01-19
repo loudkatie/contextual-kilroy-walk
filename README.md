@@ -45,6 +45,7 @@ can stay aligned.
 
 - Presence UI entrypoint: `KilroyWalkApp/KilroyWalkApp/App/ContextualPresenceScreen.swift`.
 - Demo tools: long-press the wordmark to open the controls + demo log sheet.
+- Demo controls now include venue selection + POI teleport.
 
 ## Reliability + controls
 
@@ -75,3 +76,8 @@ can stay aligned.
 Keep the simulator build green (`KilroyWalkApp.xcodeproj`, scheme
 `KilroyWalkApp`, destination `iPhone 17`). Ask loudly before destructive
 commands or dependency upgrades.
+
+## Latest updates
+- Multi-venue zones with dense micro-POIs (Frontier Tower + AWS Loft).
+- Floor-band gating for vertical spaces.
+- Remote AI planner option with local fallback.
