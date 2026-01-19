@@ -4,6 +4,12 @@ Codex agent instructions live in `AGENTS.md`. This README tracks the
 Frontier Walk demo work so the founders, Thomas, and any drop-in helpers
 can stay aligned.
 
+## Product anchor
+
+- Contextual is a proactive spatial AI platform. The user never faces a blank chat box.
+- Tink is the personal agent, born at account creation, always championing the user.
+- Demo playground: Frontier Tower, 995 Market St, SF (16 floors, altimeter for floor).
+
 ## Frontier Walk v0 focus
 
 - **Apple-first, iOS-only** build that feels intentional and ambient —
@@ -18,9 +24,16 @@ can stay aligned.
   2. Coffee / Quiet Spot — friendly nearby interstitial
   3. Drop Moment — gated media surfaced via KilroyDrops
 
+## Docs index
+
+- Product + founder notes: `docs/product/Founders-Notes.md`.
+- AI integration + stack plan: `docs/product/AI-Stack-Plan.md`.
+- Visual north star + palette notes: `docs/design/DesignNotes.md`.
+- Build status + known issues: `docs/status/Contextual-Status.md`.
+- Reference product doc PDF: `docs/references/Contextual Product Doc (13 Jan 2026).pdf`.
+
 ## Design continuity
 
-- Visual north star + palette notes: `docs/DesignNotes.md`.
 - Presence UI entrypoint: `KilroyWalkApp/KilroyWalkApp/App/ContextualPresenceScreen.swift`.
 - Demo tools: long-press the wordmark to open the controls + demo log sheet.
 

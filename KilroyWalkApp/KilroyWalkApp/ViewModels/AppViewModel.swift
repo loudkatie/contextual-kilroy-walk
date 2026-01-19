@@ -66,6 +66,7 @@ final class AppViewModel: ObservableObject {
         }
     }
     @Published private(set) var activeMoment: Moment?
+    @Published private(set) var activePlan: AgentPlan?
     @Published private(set) var momentDiagnostics: String
     @Published private(set) var locationSummary: String
     @Published private(set) var currentPOILabel: String?
@@ -75,6 +76,7 @@ final class AppViewModel: ObservableObject {
     private let calendarConnector: CalendarConnector
     private let audioService: AudioWhisperService
     private let triggerEngine: TriggerEngine
+    private let agentPlanner: AgentPlanner
     private var cancellables: Set<AnyCancellable> = []
 
     init(
@@ -83,7 +85,8 @@ final class AppViewModel: ObservableObject {
         kilroyConnector: KilroyDropsConnector = KilroyDropsConnector(),
         calendarConnector: CalendarConnector = CalendarConnector(),
         audioService: AudioWhisperService? = nil,
-        triggerEngine: TriggerEngine = TriggerEngine()
+        triggerEngine: TriggerEngine = TriggerEngine(),
+        agentPlanner: AgentPlanner = AgentPlanner()
     ) {
         self.agent = agent
         self.demoLog = demoLog
@@ -92,6 +95,7 @@ final class AppViewModel: ObservableObject {
         let resolvedAudioService = audioService ?? AudioWhisperService()
         self.audioService = resolvedAudioService
         self.triggerEngine = triggerEngine
+        self.agentPlanner = agentPlanner
         self.context = Context(placeId: triggerEngine.zone.id, timestamp: Date())
         self.connectorStatuses = [
             ConnectorStatus(name: kilroyConnector.name, description: kilroyConnector.description, lastSynced: nil, state: .idle),
@@ -99,6 +103,7 @@ final class AppViewModel: ObservableObject {
         ]
         self.audioRouteDescription = resolvedAudioService.currentRouteDescription
         self.activeMoment = nil
+        self.activePlan = nil
         self.momentDiagnostics = "No moment yet"
         self.locationSummary = "Outside zone"
         self.currentPOILabel = nil
@@ -146,19 +151,27 @@ final class AppViewModel: ObservableObject {
     }
 
     func triggerManualMoment(_ manual: ManualMoment) {
-        let decision = triggerEngine.manualTrigger(
+        let decision = agentPlanner.planManual(
             manualID: manual.manualID,
-            snapshot: agent.memoryStore.snapshot
+            snapshot: agent.memoryStore.snapshot,
+            triggerEngine: triggerEngine
         )
 
         switch decision.status {
         case .triggered:
             if let moment = decision.moment {
-                activate(moment: moment, reason: manual.displayName, explanation: decision.explanation, eligibility: decision.eligibility)
+                activate(
+                    moment: moment,
+                    plan: decision.plan,
+                    reason: manual.displayName,
+                    explanation: decision.explanation,
+                    eligibility: decision.eligibility
+                )
             }
         case .missingLocation, .outsideZone, .noMatch:
             consentState = decision.consentState
             momentDiagnostics = decision.explanation
+            activePlan = nil
             demoLog.append(
                 "Manual \(manual.displayName) skipped • eligible=\(decision.eligibility) • \(decision.explanation)",
                 category: .info
@@ -313,9 +326,10 @@ final class AppViewModel: ObservableObject {
     }
 
     private func reevaluateMoments(reason: String, logEvenIfMissing: Bool = true) {
-        let decision = triggerEngine.evaluate(
+        let decision = agentPlanner.plan(
             context: context,
-            snapshot: agent.memoryStore.snapshot
+            snapshot: agent.memoryStore.snapshot,
+            triggerEngine: triggerEngine
         )
 
         switch decision.status {
@@ -323,6 +337,7 @@ final class AppViewModel: ObservableObject {
             if let moment = decision.moment {
                 activate(
                     moment: moment,
+                    plan: decision.plan,
                     reason: reason,
                     explanation: decision.explanation,
                     eligibility: decision.eligibility
@@ -330,6 +345,7 @@ final class AppViewModel: ObservableObject {
             }
         case .missingLocation, .outsideZone, .noMatch:
             activeMoment = nil
+            activePlan = nil
             consentState = decision.consentState
             momentDiagnostics = decision.explanation
             if logEvenIfMissing {
@@ -341,8 +357,9 @@ final class AppViewModel: ObservableObject {
         }
     }
 
-    private func activate(moment: Moment, reason: String, explanation: String, eligibility: Bool) {
+    private func activate(moment: Moment, plan: AgentPlan?, reason: String, explanation: String, eligibility: Bool) {
         activeMoment = moment
+        activePlan = plan
         momentDiagnostics = explanation
         consentState = .awaiting
         triggerEngine.markDelivered(moment)
@@ -350,6 +367,10 @@ final class AppViewModel: ObservableObject {
             "Moment ready (\(moment.title)) via \(reason) • eligible=\(eligibility) • \(explanation)",
             category: .action
         )
+        if let plan {
+            let secondary = plan.secondaryAction?.title ?? "none"
+            demoLog.append("Plan schema • primary=\(plan.primaryAction.title) • secondary=\(secondary)", category: .info)
+        }
         softHapticTap()
         playWhisper(for: moment)
     }
