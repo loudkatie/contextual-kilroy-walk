@@ -82,6 +82,19 @@ struct DemoControlsView: View {
                     viewModel.testWhisper()
                 }
             }
+
+            Section("Agent") {
+                Picker("Planner", selection: $viewModel.agentMode) {
+                    ForEach(AppViewModel.AgentMode.allCases) { mode in
+                        Text(mode.displayName).tag(mode)
+                    }
+                }
+                .pickerStyle(.menu)
+
+                TextField("AI server URL (http://...)", text: $viewModel.agentServerURLInput)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+            }
         }
         .navigationTitle("Demo Controls")
     }

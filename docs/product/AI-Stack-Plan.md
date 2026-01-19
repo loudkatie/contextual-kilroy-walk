@@ -50,6 +50,7 @@ Last updated: 2026-01-17
 - Inputs: context snapshot + behavior events (tap/ignore/delay/loc/floor).
 - Output: strict moment schema (use JSON schema or function calling).
 - Persistence: lightweight JSON store for user->thread_id mapping.
+- Demo server implementation lives in `server/` and returns `Moment` + `AgentPlan`.
 
 ### Phase 2 (partner-ready)
 - Connector auth flows (OAuth, token vault).

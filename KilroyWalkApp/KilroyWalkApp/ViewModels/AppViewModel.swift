@@ -59,6 +59,12 @@ final class AppViewModel: ObservableObject {
     @Published var permissionTokenInput: String = ""
     @Published private(set) var connectorStatuses: [ConnectorStatus] = []
     @Published private(set) var audioRouteDescription: String
+    @Published var agentMode: AgentMode = .local {
+        didSet { persistAgentSettings() }
+    }
+    @Published var agentServerURLInput: String = "" {
+        didSet { persistAgentSettings() }
+    }
     @Published var locationMode: DemoLocationMode = .outside {
         didSet {
             guard oldValue != locationMode else { return }
@@ -77,7 +83,11 @@ final class AppViewModel: ObservableObject {
     private let audioService: AudioWhisperService
     private let triggerEngine: TriggerEngine
     private let agentPlanner: AgentPlanner
+    private let agentAPIClient: AgentAPIClient
     private var cancellables: Set<AnyCancellable> = []
+    private var recentEvents: [AgentEvent] = []
+    private let maxStoredEvents = 20
+    private var planTask: Task<Void, Never>?
 
     init(
         agent: Agent = Agent(),
@@ -86,7 +96,8 @@ final class AppViewModel: ObservableObject {
         calendarConnector: CalendarConnector = CalendarConnector(),
         audioService: AudioWhisperService? = nil,
         triggerEngine: TriggerEngine = TriggerEngine(),
-        agentPlanner: AgentPlanner = AgentPlanner()
+        agentPlanner: AgentPlanner = AgentPlanner(),
+        agentAPIClient: AgentAPIClient = AgentAPIClient()
     ) {
         self.agent = agent
         self.demoLog = demoLog
@@ -96,6 +107,7 @@ final class AppViewModel: ObservableObject {
         self.audioService = resolvedAudioService
         self.triggerEngine = triggerEngine
         self.agentPlanner = agentPlanner
+        self.agentAPIClient = agentAPIClient
         self.context = Context(placeId: triggerEngine.zone.id, timestamp: Date())
         self.connectorStatuses = [
             ConnectorStatus(name: kilroyConnector.name, description: kilroyConnector.description, lastSynced: nil, state: .idle),
@@ -107,6 +119,8 @@ final class AppViewModel: ObservableObject {
         self.momentDiagnostics = "No moment yet"
         self.locationSummary = "Outside zone"
         self.currentPOILabel = nil
+        self.agentMode = loadAgentMode()
+        self.agentServerURLInput = loadAgentURL()
 
         resolvedAudioService.routeDescriptionDidChange = { [weak self] description in
             self?.audioRouteDescription = description
@@ -131,6 +145,7 @@ final class AppViewModel: ObservableObject {
         audioService.playWelcome()
         forceLocationMode(.arrival)
         context.timestamp = Date()
+        recordEvent(kind: .action, detail: "arrival_triggered", metadata: ["source": "manual"])
         demoLog.append("Arrival event triggered", category: .action)
         Task {
             await refreshDrops(reason: "Arrival event")
@@ -140,6 +155,7 @@ final class AppViewModel: ObservableObject {
     func setFloorBand() {
         guard !floorBandInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
         context.floorBand = floorBandInput.uppercased()
+        recordEvent(kind: .location, detail: "floor_band_set", metadata: ["floor": context.floorBand ?? ""])
         demoLog.append("Floor band set to \(context.floorBand ?? "n/a")", category: .action)
         Task {
             await refreshDrops(reason: "Floor change")
@@ -151,38 +167,46 @@ final class AppViewModel: ObservableObject {
     }
 
     func triggerManualMoment(_ manual: ManualMoment) {
-        let decision = agentPlanner.planManual(
-            manualID: manual.manualID,
-            snapshot: agent.memoryStore.snapshot,
-            triggerEngine: triggerEngine
-        )
+        recordEvent(kind: .action, detail: "manual_trigger", metadata: ["id": manual.manualID])
+        guard agentMode == .remote, let _ = agentBaseURL() else {
+            let decision = agentPlanner.planManual(
+                manualID: manual.manualID,
+                snapshot: agent.memoryStore.snapshot,
+                triggerEngine: triggerEngine
+            )
 
-        switch decision.status {
-        case .triggered:
-            if let moment = decision.moment {
-                activate(
-                    moment: moment,
-                    plan: decision.plan,
-                    reason: manual.displayName,
-                    explanation: decision.explanation,
-                    eligibility: decision.eligibility
+            switch decision.status {
+            case .triggered:
+                if let moment = decision.moment {
+                    activate(
+                        moment: moment,
+                        plan: decision.plan,
+                        reason: manual.displayName,
+                        explanation: decision.explanation,
+                        eligibility: decision.eligibility
+                    )
+                }
+            case .missingLocation, .outsideZone, .noMatch:
+                consentState = decision.consentState
+                momentDiagnostics = decision.explanation
+                activePlan = nil
+                demoLog.append(
+                    "Manual \(manual.displayName) skipped • eligible=\(decision.eligibility) • \(decision.explanation)",
+                    category: .info
                 )
             }
-        case .missingLocation, .outsideZone, .noMatch:
-            consentState = decision.consentState
-            momentDiagnostics = decision.explanation
-            activePlan = nil
-            demoLog.append(
-                "Manual \(manual.displayName) skipped • eligible=\(decision.eligibility) • \(decision.explanation)",
-                category: .info
-            )
+            return
         }
+
+        momentDiagnostics = "Contacting Tink..."
+        requestRemotePlan(reason: manual.displayName, manualID: manual.manualID)
     }
 
     func storePermissionToken() {
         let trimmed = permissionTokenInput.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
         agent.memoryStore.recordPermissionToken(trimmed)
+        recordEvent(kind: .action, detail: "permission_token_added", metadata: ["token": trimmed])
         permissionTokenInput = ""
         demoLog.append("Permission token stored", category: .action)
         reevaluateMoments(reason: "Permission token updated", logEvenIfMissing: false)
@@ -193,11 +217,13 @@ final class AppViewModel: ObservableObject {
 
     func like(drop: Drop) {
         agent.memoryStore.like(dropID: drop.id)
+        recordEvent(kind: .reaction, detail: "drop_liked", metadata: ["drop": drop.title])
         demoLog.append("Liked drop: \(drop.title)", category: .action)
     }
 
     func ignore(drop: Drop) {
         agent.memoryStore.ignore(dropID: drop.id)
+        recordEvent(kind: .reaction, detail: "drop_ignored", metadata: ["drop": drop.title])
         demoLog.append("Ignored drop: \(drop.title)", category: .action)
     }
 
@@ -209,6 +235,7 @@ final class AppViewModel: ObservableObject {
         let actionSummary = "\(action.title) [\(action.kind.rawValue)]"
         switch action.kind {
         case .acknowledge:
+            recordEvent(kind: .reaction, detail: "moment_acknowledged", metadata: ["moment": moment.title])
             demoLog.append("Action tapped: \(actionSummary) • moment dismissed", category: .action)
             completeMoment(with: "Moment dismissed by user.", consent: .idle)
         case .openURL:
@@ -216,14 +243,17 @@ final class AppViewModel: ObservableObject {
                 demoLog.append("Action tapped: \(actionSummary) • invalid URL payload.", category: .error)
                 return
             }
+            recordEvent(kind: .action, detail: "open_url", metadata: ["url": payload])
             demoLog.append("Action tapped: \(actionSummary) • opening \(payload)", category: .action)
             UIApplication.shared.open(url)
             completeMoment(with: "Opened link: \(payload)", consent: .granted)
         case .openDrop:
             let payload = action.payload ?? "unknown drop"
+            recordEvent(kind: .action, detail: "open_drop", metadata: ["drop": payload])
             demoLog.append("Action tapped: \(actionSummary) • route via Drops tab (\(payload))", category: .action)
             completeMoment(with: "Drop requested: \(payload)", consent: .granted)
         case .openCard:
+            recordEvent(kind: .action, detail: "open_card", metadata: ["moment": moment.title])
             demoLog.append("Action tapped: \(actionSummary) • no view wired yet.", category: .info)
             completeMoment(with: "Captured intent: \(action.title)", consent: .granted)
         }
@@ -320,12 +350,19 @@ final class AppViewModel: ObservableObject {
         }
 
         if logAction {
+            recordEvent(kind: .location, detail: "location_mode_changed", metadata: ["mode": mode.displayName])
             demoLog.append("Location mode → \(mode.displayName)", category: .action)
             reevaluateMoments(reason: "Location mode \(mode.displayName)")
         }
     }
 
     private func reevaluateMoments(reason: String, logEvenIfMissing: Bool = true) {
+        if agentMode == .remote, agentBaseURL() != nil {
+            momentDiagnostics = "Contacting Tink..."
+            requestRemotePlan(reason: reason, manualID: nil)
+            return
+        }
+
         let decision = agentPlanner.plan(
             context: context,
             snapshot: agent.memoryStore.snapshot,
@@ -386,6 +423,7 @@ final class AppViewModel: ObservableObject {
         default:
             audioService.playWantToOpen()
         }
+        recordEvent(kind: .whisper, detail: "whisper_played", metadata: ["key": moment.whisperAudioKey ?? "default"])
     }
 
     private func softHapticTap() {
@@ -399,9 +437,129 @@ final class AppViewModel: ObservableObject {
         consentState = consent
         momentDiagnostics = message
     }
+
+    private func requestRemotePlan(reason: String, manualID: String?) {
+        guard let baseURL = agentBaseURL() else {
+            demoLog.append("AI server URL missing; using local planner.", category: .error)
+            return
+        }
+
+        planTask?.cancel()
+        let request = AgentPlanRequest(
+            contextualID: agent.identity.uuid.uuidString,
+            context: context,
+            memory: agent.memoryStore.snapshot,
+            recentEvents: Array(recentEvents.suffix(maxStoredEvents)),
+            manualID: manualID,
+            timestamp: Date()
+        )
+
+        planTask = Task {
+            do {
+                let response = try await agentAPIClient.plan(request: request, baseURL: baseURL)
+                handleRemoteResponse(response, reason: reason)
+            } catch {
+                demoLog.append("AI request failed (\(error.localizedDescription)); using local planner.", category: .error)
+                let fallback: AgentPlanDecision
+                if let manualID {
+                    fallback = agentPlanner.planManual(
+                        manualID: manualID,
+                        snapshot: agent.memoryStore.snapshot,
+                        triggerEngine: triggerEngine
+                    )
+                } else {
+                    fallback = agentPlanner.plan(
+                        context: context,
+                        snapshot: agent.memoryStore.snapshot,
+                        triggerEngine: triggerEngine
+                    )
+                }
+                if fallback.status == .triggered, let moment = fallback.moment {
+                    activate(
+                        moment: moment,
+                        plan: fallback.plan,
+                        reason: "Local fallback",
+                        explanation: fallback.explanation,
+                        eligibility: fallback.eligibility
+                    )
+                } else {
+                    activeMoment = nil
+                    activePlan = nil
+                    consentState = fallback.consentState
+                    momentDiagnostics = fallback.explanation
+                }
+            }
+        }
+    }
+
+    private func handleRemoteResponse(_ response: AgentPlanResponse, reason: String) {
+        let status = response.status.lowercased()
+        let eligibility = response.eligibility ?? false
+        consentState = response.consentState ?? .idle
+
+        if status == "triggered", let moment = response.moment {
+            activate(
+                moment: moment,
+                plan: response.plan,
+                reason: "AI • \(reason)",
+                explanation: response.explanation,
+                eligibility: eligibility
+            )
+            return
+        }
+
+        activeMoment = nil
+        activePlan = nil
+        momentDiagnostics = response.explanation
+        demoLog.append("AI: \(response.explanation)", category: .info)
+    }
+
+    private func recordEvent(kind: AgentEvent.Kind, detail: String?, metadata: [String: String] = [:]) {
+        let event = AgentEvent(kind: kind, detail: detail, metadata: metadata)
+        recentEvents.append(event)
+        if recentEvents.count > maxStoredEvents {
+            recentEvents.removeFirst(recentEvents.count - maxStoredEvents)
+        }
+    }
+
+    private func agentBaseURL() -> URL? {
+        let trimmed = agentServerURLInput.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+        return URL(string: trimmed)
+    }
+
+    private func persistAgentSettings() {
+        UserDefaults.standard.set(agentServerURLInput, forKey: "contextual.agentServerURL")
+        UserDefaults.standard.set(agentMode.rawValue, forKey: "contextual.agentMode")
+    }
+
+    private func loadAgentURL() -> String {
+        UserDefaults.standard.string(forKey: "contextual.agentServerURL") ?? ""
+    }
+
+    private func loadAgentMode() -> AgentMode {
+        let stored = UserDefaults.standard.string(forKey: "contextual.agentMode")
+        return AgentMode(rawValue: stored ?? "") ?? .local
+    }
 }
 
 extension AppViewModel {
+    enum AgentMode: String, CaseIterable, Identifiable {
+        case local
+        case remote
+
+        var id: String { rawValue }
+
+        var displayName: String {
+            switch self {
+            case .local:
+                return "Local Planner"
+            case .remote:
+                return "AI Server"
+            }
+        }
+    }
+
     enum DemoLocationMode: String, CaseIterable, Identifiable {
         case outside
         case arrival

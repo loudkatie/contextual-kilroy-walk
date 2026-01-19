@@ -28,9 +28,17 @@ can stay aligned.
 
 - Product + founder notes: `docs/product/Founders-Notes.md`.
 - AI integration + stack plan: `docs/product/AI-Stack-Plan.md`.
+- VC demo plan: `docs/product/VC-Demo-Plan.md`.
 - Visual north star + palette notes: `docs/design/DesignNotes.md`.
 - Build status + known issues: `docs/status/Contextual-Status.md`.
 - Reference product doc PDF: `docs/references/Contextual Product Doc (13 Jan 2026).pdf`.
+- Internal product doc (Jan 26): `docs/references/Internal_ Contextual Product Doc (Jan 26) (3).pdf`.
+
+## AI demo server
+
+- Local server lives in `server/`.
+- Start with: `OPENAI_API_KEY=sk-... node server/index.js`.
+- Set the URL in Demo Controls (Agent section) to enable remote planning.
 
 ## Design continuity
 

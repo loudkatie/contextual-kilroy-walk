@@ -26,6 +26,7 @@ Last updated: 2026-01-17
 - **Demo tools**: long‑press wordmark opens demo sheet.
 - **Local docs** now include the Jan 26 internal product doc.
 - **AgentPlanner** now creates a strict plan schema from moments.
+- **Remote planner** optional: demo server + iOS toggle added.
 
 ## Why it still looks “flat”
 SwiftUI gradient layers can approximate the orb, but the reference orb is photographic with

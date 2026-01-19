@@ -15,6 +15,7 @@ Last updated: 2026-01-17
 - Use ChatGPT API with one thread per user.
 - Use tool calling or JSON schema for strict response shape.
 - Keep prompts short; send behavior deltas only.
+- Demo server lives in `server/` with file-based memory.
 
 ## Scope cuts (keep it demo-safe)
 - No full auth; use device ID for Contextual ID.
