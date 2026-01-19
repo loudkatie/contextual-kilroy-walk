@@ -2,6 +2,7 @@
 
 - Product notes: `product/Founders-Notes.md`
 - AI integration + stack plan: `product/AI-Stack-Plan.md`
+- VC demo plan: `product/VC-Demo-Plan.md`
 - Design notes: `design/DesignNotes.md`
 - Build status: `status/Contextual-Status.md`
 - References: `references/Contextual Product Doc (13 Jan 2026).pdf`

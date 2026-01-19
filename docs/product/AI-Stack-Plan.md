@@ -7,6 +7,7 @@ Last updated: 2026-01-17
 - Reliable triggers (location + identity + time + permissions).
 - Lightweight memory that influences next actions.
 - Clear separation between iOS demo shell and platform core.
+- User-specific agent instance (persistent thread) that learns from actions more than text.
 
 ## Proposed stack (minimal, evolvable)
 
@@ -26,9 +27,10 @@ Last updated: 2026-01-17
   - Normalizes partner data (calendar, ticketing, retail, etc).
   - Permissioned per user, scope-limited.
 
-### AI layer
-- Prompted agent policy with guardrails (no chat, proactive only).
-- Agent memory retrieval (simple rules first, vector later).
+### AI layer (ChatGPT API)
+- One agent thread per user (single ongoing conversation).
+- System prompt enforces: proactive only, no chat UI, whisper-first tone.
+- Tooling inputs are behavioral: actions, movement, interactions.
 - Output constrained to a strict schema for UI reliability.
 
 ## Phased delivery
@@ -42,12 +44,12 @@ Last updated: 2026-01-17
 - Local "AgentPlanner" stub now selects from pre-authored moments.
 - Schema enforced via plan output: {momentId, title, whisperAudioId, primaryCTA, secondaryCTA}.
 
-### Phase 1 (server-backed)
-- Add a minimal API:
-  - POST /context/snapshot -> returns Moment.
-  - POST /memory/reaction -> store reaction.
-- Backing store: Postgres + JSONB for moments + memory.
-- Optional vector store for preference retrieval (when needed).
+### Phase 1 (ultra-low-cost demo)
+- Single server endpoint that calls ChatGPT API.
+- One conversation thread per user (thread_id stored with Contextual ID).
+- Inputs: context snapshot + behavior events (tap/ignore/delay/loc/floor).
+- Output: strict moment schema (use JSON schema or function calling).
+- Persistence: lightweight JSON store for user->thread_id mapping.
 
 ### Phase 2 (partner-ready)
 - Connector auth flows (OAuth, token vault).

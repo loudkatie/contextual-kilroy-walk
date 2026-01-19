@@ -12,6 +12,7 @@ Last updated: 2026-01-17
 - Tink is a champion for the user, proactive but never noisy.
 - Experience is screen-light: haptic on wrist, optional whisper in ear.
 - Tink learns via behavior, not forms; long-term preferences persist.
+- Each user has a persistent AI thread; one agent instance per user.
 
 ## Experience flow (v0 demo)
 1. User crosses a geolocation gate (Contextual Zone).
@@ -37,6 +38,7 @@ Last updated: 2026-01-17
 ## Near-term priority
 - Ship a reliable AI agent layer before over-indexing on front-end polish.
 - Design gets refined once agent loop and trigger reliability are proven.
+- Budget target for demo: ~$50 total (bootstrapped).
 
 ## Jan 26 product doc highlights
 - Proactive, not reactive: no prompt-first interactions or chat UI.
